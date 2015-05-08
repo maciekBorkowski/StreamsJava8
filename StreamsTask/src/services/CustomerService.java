@@ -1,6 +1,9 @@
 package services;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import entities.Customer;
 import entities.Product;
@@ -15,20 +18,25 @@ public class CustomerService implements CustomerServiceInterface {
 
 	@Override
 	public List<Customer> findByName(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		return customers.stream().filter(n -> n.getName().equals(name)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Customer> findByField(String fieldName, Object value) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			return (List<Customer>) customers.stream().getClass().getDeclaredField(fieldName).get(value);
+		} catch (IllegalArgumentException | IllegalAccessException
+				| NoSuchFieldException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 	}
 
 	@Override
 	public List<Customer> customersWhoBoughtMoreThan(int number) {
-		// TODO Auto-generated method stub
-		return null;
+		return customers.stream().filter(n -> n.getBoughtProducts().size() > number).collect(Collectors.toList());
 	}
 
 	@Override

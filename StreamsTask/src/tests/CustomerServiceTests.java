@@ -22,5 +22,16 @@ public class CustomerServiceTests {
 		assertEquals(1, res.size());
 		
 	}
+	
+	@Test
+	public void testCustomersWhoBoughtMoreThan() {
+		CustomerServiceInterface cs = new CustomerService(DataProducer.getTestData(10));
+		
+		List<Customer> res = cs.customersWhoBoughtMoreThan(2);
+		
+		assertNotNull("Result can't be null", res);
+		assertEquals(1, res.size());
+		
+	}
 
 }
