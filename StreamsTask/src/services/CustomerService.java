@@ -15,23 +15,20 @@ public class CustomerService implements CustomerServiceInterface {
 	public CustomerService(List<Customer> customers) {
 		this.customers = customers;
 	}
-
+	
 	@Override
 	public List<Customer> findByName(String name) {
 		return customers.stream().filter(n -> n.getName().equals(name)).collect(Collectors.toList());
 	}
 
 	@Override
-	public List<Customer> findByField(String fieldName, Object value) {
-		try {
-			return (List<Customer>) customers.stream().getClass().getDeclaredField(fieldName).get(value);
-		} catch (IllegalArgumentException | IllegalAccessException
-				| NoSuchFieldException | SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public List<Customer> findByField(String fieldName, Object value) throws SecurityException, NoSuchFieldException {
+		List<Customer> customer = null;
 		
+
+					customer = customers.stream().filter(c -> c.getClass().getField(fieldName) == value).collect(Collectors.toList());
 		
+		return customer;	
 	}
 
 	@Override
@@ -41,50 +38,62 @@ public class CustomerService implements CustomerServiceInterface {
 
 	@Override
 	public List<Customer> customersWhoSpentMoreThan(double price) {
-		// TODO Auto-generated method stub
-		return null;
+		return customers.stream().filter(
+					n -> n.getBoughtProducts().stream().count() > price
+				).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Customer> customersWithNoOrders() {
-		// TODO Auto-generated method stub
-		return null;
+		return customers.stream().filter(n -> n.getBoughtProducts().size() == 0).collect(Collectors.toList());
 	}
 
 	@Override
 	public void addProductToAllCustomers(Product p) {
-		// TODO Auto-generated method stub
-
+		customers.stream().forEach(c -> c.addProduct(p));
 	}
 
 	@Override
 	public double avgOrders(boolean includeEmpty) {
-		// TODO Auto-generated method stub
-		return 0;
+
+		double sumOrders = customers.stream().mapToDouble(
+				c -> c.getBoughtProducts().stream().collect(
+						Collectors.summingDouble(Product::getPrice)
+						)).sum();
+		int customerCount = 10;
+		if(!includeEmpty) {
+			customerCount = customers.stream().filter(c -> c.getBoughtProducts().size() > 0).collect(Collectors.toList()).size();
+		}
+		
+		return sumOrders/customerCount;
 	}
 
 	@Override
 	public boolean wasProductBought(Product p) {
-		// TODO Auto-generated method stub
-		return false;
+		return customers.stream().anyMatch(c -> c.getBoughtProducts().contains(p));
 	}
 
 	@Override
 	public List<Product> mostPopularProduct() {
-		// TODO Auto-generated method stub
-		return null;
+		return customers.stream().collect(Collectors.summingInt();
 	}
 
 	@Override
 	public int countBuys(Product p) {
-		// TODO Auto-generated method stub
-		return 0;
+//		return (int) customers.stream()
+//				filter(c -> c.getBoughtProducts().stream().allMatch(pr -> pr.getDescription() == p.getDescription())).;
+				return 0;
 	}
 
 	@Override
 	public int countCustomersWhoBought(Product p) {
-		// TODO Auto-generated method stub
-		return 0;
+		return customers.stream().filter(c -> c.getBoughtProducts().contains(p)).toArray().length;
+	}
+
+	@Override
+	public void test() {
+		customers.forEach(c -> c.getBoughtProducts().forEach(p -> System.out.println(c.getName() + " " + p.getDescription())));
 	}
 
 }
+

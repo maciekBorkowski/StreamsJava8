@@ -6,6 +6,7 @@ import entities.Product;
 
 public interface CustomerServiceInterface {
 
+	void test();
 	/**
 	 * Finds all customers with name equal to given name
 	 * @param name
@@ -19,8 +20,12 @@ public interface CustomerServiceInterface {
 	 * @param fieldName
 	 * @param value
 	 * @return
+	 * @throws SecurityException 
+	 * @throws NoSuchFieldException 
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
 	 */
-	List<Customer> findByField(String fieldName, Object value);
+	List<Customer> findByField(String fieldName, Object value) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException;
 
 	/**
 	 * Finds all customers who bought more than a given number of products.
