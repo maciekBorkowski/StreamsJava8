@@ -2,7 +2,11 @@ package services;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import entities.Customer;
@@ -22,13 +26,8 @@ public class CustomerService implements CustomerServiceInterface {
 	}
 
 	@Override
-	public List<Customer> findByField(String fieldName, Object value) throws SecurityException, NoSuchFieldException {
-		List<Customer> customer = null;
-		
-
-					customer = customers.stream().filter(c -> c.getClass().getField(fieldName) == value).collect(Collectors.toList());
-		
-		return customer;	
+	public List<Customer> findByField(String fieldName, Object value) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		return null;
 	}
 
 	@Override
@@ -75,14 +74,34 @@ public class CustomerService implements CustomerServiceInterface {
 
 	@Override
 	public List<Product> mostPopularProduct() {
-		return customers.stream().collect(Collectors.summingInt();
+		List<Product> mostPopular = new ArrayList<Product>();
+		int max = 0;
+		Map<Integer, List<Product>> products = new HashMap<Integer, List<Product>>();
+		for (Customer customer : customers) {
+			products.putAll((customer.getBoughtProducts().stream().collect(Collectors.groupingBy(Product::getId))));
+		}
+
+		for (Entry<Integer, List<Product>> entry : products.entrySet()) {
+		    Integer key = entry.getKey();
+		    List<Product> listProducts = entry.getValue();
+		    if(listProducts.size() > max) {
+		    	max = listProducts.size();
+		    	mostPopular.clear();
+		    	mostPopular.add(listProducts.get(0));
+		    } else if(listProducts.size() == max) {
+		    	mostPopular.add(listProducts.get(0));
+		    }
+		}
+		return mostPopular;
 	}
 
 	@Override
 	public int countBuys(Product p) {
-//		return (int) customers.stream()
-//				filter(c -> c.getBoughtProducts().stream().allMatch(pr -> pr.getDescription() == p.getDescription())).;
-				return 0;
+		List<Product> products = new ArrayList<Product>();
+		for (Customer customer : customers) {
+			products.addAll(customer.getBoughtProducts().stream().filter(pr -> pr.getId() == p.getId()).collect(Collectors.toList()));
+		}
+		return products.size();
 	}
 
 	@Override
@@ -92,7 +111,7 @@ public class CustomerService implements CustomerServiceInterface {
 
 	@Override
 	public void test() {
-		customers.forEach(c -> c.getBoughtProducts().forEach(p -> System.out.println(c.getName() + " " + p.getDescription())));
+		customers.forEach(c -> c.getBoughtProducts().forEach(p -> System.out.println(c.getId() + " " + c.getName() + " " + p.getDescription())));
 	}
 
 }

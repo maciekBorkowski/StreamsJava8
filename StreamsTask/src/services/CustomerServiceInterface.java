@@ -25,7 +25,7 @@ public interface CustomerServiceInterface {
 	 * @throws IllegalAccessException 
 	 * @throws IllegalArgumentException 
 	 */
-	List<Customer> findByField(String fieldName, Object value) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException;
+	List<Customer> findByField(String fieldName, Object value) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException;
 
 	/**
 	 * Finds all customers who bought more than a given number of products.
